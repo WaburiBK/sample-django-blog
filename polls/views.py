@@ -1,5 +1,6 @@
 #from urllib import response
 from django.urls import reverse
+from django.views import generic
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 #from django.template import loader
@@ -8,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 
 from .models import Choice, Question
 
-def index(request):
+"""def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
     context = {
         'latest_question_list': latest_question_list,
@@ -28,7 +29,23 @@ def detail(request, question_id):
 
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/results.html', {'question': question})
+    return render(request, 'polls/results.html', {'question': question})"""
+
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
+
+    def get_queryset(self):
+        """Return the last five published questions"""
+        return Question.objects.order_by('-pub_date')[:5]
+
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/details.html'
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/results.html'
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
